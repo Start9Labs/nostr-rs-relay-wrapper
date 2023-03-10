@@ -1,8 +1,8 @@
-import { matches, types as T, util, YAML } from "../deps.ts";
+import { matches, Types, util, YAML } from "start-sdk";
 
 const { shape, string } = matches;
 
-const noPropertiesFound: T.ResultType<T.Properties> = {
+const noPropertiesFound: Types.ResultType<Types.Properties> = {
   result: {
     version: 2,
     data: {
@@ -24,24 +24,26 @@ const configMatcher = shape({
   "lan-address": string,
 });
 
-export const properties: T.ExpectedExports.properties = async (
-  effects: T.Effects,
-) => {
+export const properties: Types.ExpectedExports.properties = async ({
+  effects,
+}) => {
   if (
-    await util.exists(effects, {
+    (await util.exists(effects, {
       volumeId: "main",
       path: "start9/config.yaml",
-    }) === false
+    })) === false
   ) {
     return noPropertiesFound;
   }
-  const config = configMatcher.unsafeCast(YAML.parse(
-    await effects.readFile({
-      path: "start9/config.yaml",
-      volumeId: "main",
-    }),
-  ));
-  const properties: T.ResultType<T.Properties> = {
+  const config = configMatcher.unsafeCast(
+    YAML.parse(
+      await effects.readFile({
+        path: "start9/config.yaml",
+        volumeId: "main",
+      })
+    )
+  );
+  const properties: Types.ResultType<Types.Properties> = {
     result: {
       version: 2,
       data: {
